@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 02 — HTTP e desenho de APIs</title>
+<style>
+:root {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --primary-soft: #eef2ff;
+  --border: #e5e7eb;
+  --success: #0f766e;
+  --success-soft: #ecfdf5;
+  --warning: #a16207;
+  --warning-soft: #fefce8;
+  --code: #111827;
+  --shadow: 0 10px 30px rgba(31, 41, 55, 0.08);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+}
+a { color: var(--primary); }
+.container { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+header {
+  background:
+    radial-gradient(circle at top right, rgba(99,102,241,.28), transparent 35%),
+    linear-gradient(135deg, #111827, #312e81);
+  color: white;
+  padding: 58px 0 46px;
+}
+header h1 { font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1.08; margin: 0 0 14px; max-width: 900px; }
+header p { max-width: 850px; margin: 0; color: #dbeafe; font-size: 1.05rem; }
+.badge {
+  display: inline-block; margin-bottom: 16px; padding: 7px 11px; border-radius: 999px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  font-size: .82rem; font-weight: 800; letter-spacing: .04em;
+}
+main { padding: 36px 0 70px; }
+section {
+  background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+  padding: 27px; margin-bottom: 22px; box-shadow: var(--shadow);
+}
+h2 { margin-top: 0; font-size: 1.42rem; }
+h3 { margin-bottom: 7px; }
+.muted { color: var(--muted); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.stat, .mini-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 19px;
+}
+.stat strong { display: block; color: var(--primary); font-size: 1.7rem; }
+.note {
+  background: var(--primary-soft); border-left: 4px solid var(--primary);
+  padding: 16px 18px; border-radius: 12px;
+}
+.success {
+  background: var(--success-soft); border-left: 4px solid var(--success);
+  padding: 16px 18px; border-radius: 12px;
+}
+.warning {
+  background: var(--warning-soft); border-left: 4px solid #eab308;
+  padding: 16px 18px; border-radius: 12px;
+}
+.breadcrumb {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px;
+  text-decoration: none; color: #dbeafe; font-weight: 650;
+}
+.agenda {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.agenda div {
+  padding: 15px; border: 1px solid var(--border); border-radius: 14px; background: #f9fafb;
+}
+.agenda b { color: var(--primary); display: block; }
+.flow {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 9px; margin: 18px 0 4px;
+}
+.flow span {
+  padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: #f9fafb; font-weight: 700;
+}
+.flow i { color: var(--primary); font-style: normal; font-weight: 900; }
+code, .code {
+  background: var(--code); color: #e5e7eb; padding: 2px 6px; border-radius: 6px;
+}
+pre {
+  overflow-x: auto; background: var(--code); color: #e5e7eb; padding: 18px;
+  border-radius: 14px; line-height: 1.5;
+}
+.material {
+  display: block; text-decoration: none; color: inherit; padding: 16px 17px;
+  border: 1px solid var(--border); border-radius: 14px; margin: 10px 0;
+  transition: .16s ease;
+}
+.material:hover { border-color: #a5b4fc; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(31,41,55,.06); }
+.material strong { display: block; color: var(--primary); }
+.material small { color: var(--muted); }
+.checklist li, .questions li { margin: 8px 0; }
+.pill {
+  display: inline-block; background: var(--primary-soft); color: var(--primary-dark);
+  border-radius: 999px; padding: 4px 9px; font-size: .78rem; font-weight: 750;
+}
+footer { text-align: center; color: var(--muted); padding: 0 0 38px; font-size: .9rem; }
+@media (max-width: 850px) {
+  .grid-3, .grid-2, .agenda { grid-template-columns: 1fr; }
+}
+@media print {
+  body { background: white; }
+  section, .stat { box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <a class="breadcrumb" href="index.html">← Voltar para o plano</a>
+    <div class="badge">AULA 02 • APIs</div>
+    <h1>HTTP e desenho de APIs</h1>
+    <p>Aprender a transformar intenções de negócio em contratos HTTP compreensíveis, previsíveis e fáceis de testar.</p>
+  </div>
+</header>
+
+<main class="container">
+  <div class="grid-3" style="margin-bottom:22px">
+    <div class="stat"><strong>1 hora</strong><span class="muted">Duração</span></div>
+    <div class="stat"><strong>HTTP</strong><span class="muted">Base técnica</span></div>
+    <div class="stat"><strong>Design</strong><span class="muted">Foco em decisões</span></div>
+  </div>
+
+  <section>
+    <h2>Objetivo da aula</h2>
+    <p>Ao final, ela deve conseguir olhar para um requisito e propor um contrato HTTP razoável: recurso, método, rota, entrada, saída e status code — sabendo que existem escolhas e trade-offs.</p>
+    <div class="note"><strong>Mensagem principal:</strong> uma API é um contrato entre sistemas. O objetivo não é decorar verbos; é comunicar corretamente a intenção da operação.</div>
+  </section>
+
+  <section>
+    <h2>Conceitos essenciais</h2>
+    <div class="grid-2">
+      <div class="mini-card"><span class="pill">GET</span><h3>Consultar</h3><p>Recupera uma representação de um recurso. Em condições normais, não deve produzir mudanças de estado como efeito principal.</p></div>
+      <div class="mini-card"><span class="pill">POST</span><h3>Criar / executar</h3><p>Normalmente usado para criar recursos ou iniciar operações que produzem efeitos.</p></div>
+      <div class="mini-card"><span class="pill">PUT</span><h3>Substituir</h3><p>É associado à substituição da representação de um recurso e possui semântica idempotente.</p></div>
+      <div class="mini-card"><span class="pill">PATCH</span><h3>Alterar parcialmente</h3><p>Expressa uma alteração parcial. A semântica exata depende do contrato definido pela API.</p></div>
+      <div class="mini-card"><span class="pill">DELETE</span><h3>Remover</h3><p>Solicita a remoção de um recurso. No domínio, “cancelar” nem sempre significa apagar.</p></div>
+      <div class="mini-card"><span class="pill">STATUS</span><h3>Comunicar resultado</h3><p>2xx sucesso, 4xx problema na requisição/estado percebido pelo cliente, 5xx falha no processamento do servidor.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Não comece pelos endpoints</h2>
+    <p>Escolha primeiro os <strong>recursos do domínio</strong> que fazem sentido para quem consome a API.</p>
+    <div class="flow">
+      <span>Produto</span><span>Carrinho</span><span>Pedido</span><span>Pagamento</span><span>Usuário</span>
+    </div>
+    <p>Depois transforme as operações em contratos HTTP.</p>
+  </section>
+
+  <section>
+    <h2>Exercício — desenhando a API da loja</h2>
+    <p>Peça para ela propor primeiro. Só depois compare com algo semelhante a:</p>
+    <pre>GET    /products
+GET    /products/{id}
+
+GET    /cart
+POST   /cart/items
+PATCH  /cart/items/{itemId}
+DELETE /cart/items/{itemId}
+
+POST   /orders
+GET    /orders
+GET    /orders/{id}
+
+POST   /orders/{id}/cancellation</pre>
+    <p>A última rota é ótima para discussão: <code>DELETE /orders/{id}</code> representaria corretamente cancelar um pedido que precisa continuar existindo no histórico? Não necessariamente.</p>
+  </section>
+
+  <section>
+    <h2>Roteiro sugerido para os 60 minutos</h2>
+    <div class="agenda">
+      <div><b>0–10 min</b>Revisão da aula 01 e introdução ao contrato HTTP.</div>
+      <div><b>10–25 min</b>Métodos, recursos, status codes, headers e body.</div>
+      <div><b>25–50 min</b>Projetar a API da loja juntos.</div>
+      <div><b>50–60 min</b>Idempotência + mini desafio.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Status codes para discutir</h2>
+    <div class="grid-2">
+      <div class="mini-card"><h3>200 OK</h3><p>Operação realizada e resposta disponível.</p></div>
+      <div class="mini-card"><h3>201 Created</h3><p>Um novo recurso foi criado com sucesso.</p></div>
+      <div class="mini-card"><h3>204 No Content</h3><p>Sucesso sem necessidade de corpo na resposta.</p></div>
+      <div class="mini-card"><h3>400 Bad Request</h3><p>A requisição não pode ser processada no formato/condições apresentadas.</p></div>
+      <div class="mini-card"><h3>401 / 403</h3><p>Ótima discussão para separar autenticação de autorização.</p></div>
+      <div class="mini-card"><h3>404 Not Found</h3><p>O recurso solicitado não foi encontrado conforme o contrato da API.</p></div>
+      <div class="mini-card"><h3>409 Conflict</h3><p>Útil para conflitos de estado, como determinadas operações incompatíveis com o estado atual.</p></div>
+      <div class="mini-card"><h3>500 Internal Server Error</h3><p>O servidor falhou ao processar uma requisição que chegou até ele.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Idempotência — introdução</h2>
+    <p>Use o exemplo da compra:</p>
+    <div class="warning"><strong>Cenário:</strong> o usuário clicou três vezes em “Finalizar compra”. Devemos criar três pedidos?</div>
+    <p>Explique a ideia de que repetir uma operação idempotente deve produzir o mesmo efeito desejado no servidor. Não é preciso esgotar o tema aqui — ele voltará na aula de resiliência.</p>
+    <p>Questões úteis: existe um identificador da intenção de compra? O cliente pode enviar uma chave de idempotência? O banco pode ajudar a garantir unicidade? E se houver duas instâncias da API?</p>
+  </section>
+
+  <section>
+    <h2>Perguntas para conduzir a aula</h2>
+    <ul class="questions">
+      <li>Qual é o recurso que estamos manipulando?</li>
+      <li>Estamos consultando ou produzindo um efeito?</li>
+      <li>O cliente precisa enviar um body?</li>
+      <li>Qual resposta seria útil para quem chamou?</li>
+      <li>Qual status code descreve melhor o resultado?</li>
+      <li>“Cancelar pedido” significa excluir o pedido?</li>
+      <li>O que aconteceria se a mesma requisição fosse enviada duas vezes?</li>
+      <li>Como um QA testaria o contrato sem conhecer a implementação?</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Mini desafio</h2>
+    <div class="success">
+      Dê a ela quatro requisitos: <strong>favoritar produto, alterar endereço de entrega, pagar pedido e consultar estoque</strong>. Peça rota, método, entrada, resposta e principais status codes.
+    </div>
+    <p>O objetivo não é existir uma única resposta correta, mas ela conseguir justificar as decisões.</p>
+  </section>
+
+  <section>
+    <h2>Materiais de apoio</h2>
+    <a class="material" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods" target="_blank" rel="noopener">
+      <strong>MDN — HTTP Request Methods ↗</strong>
+      <small>Referência direta para métodos HTTP e suas semânticas.</small>
+    </a>
+    <a class="material" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status" target="_blank" rel="noopener">
+      <strong>MDN — HTTP Response Status Codes ↗</strong>
+      <small>Referência para as famílias 1xx–5xx e códigos individuais.</small>
+    </a>
+    <a class="material" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers" target="_blank" rel="noopener">
+      <strong>MDN — HTTP Headers ↗</strong>
+      <small>Para mostrar como metadados acompanham requests e responses.</small>
+    </a>
+    <a class="material" href="https://github.com/microsoft/api-guidelines" target="_blank" rel="noopener">
+      <strong>Microsoft REST API Guidelines ↗</strong>
+      <small>Material mais avançado para consultar boas práticas e decisões de design.</small>
+    </a>
+    <a class="material" href="https://www.rfc-editor.org/rfc/rfc9110.html" target="_blank" rel="noopener">
+      <strong>RFC 9110 — HTTP Semantics ↗</strong>
+      <small>Fonte normativa; útil como referência avançada, não como leitura obrigatória para a aula.</small>
+    </a>
+  </section>
+
+  <section>
+    <h2>Anotação sugerida para o Notion</h2>
+    <pre>## Aula 02 — HTTP e APIs
+
+### Ideia central
+API = contrato entre sistemas.
+
+### Para cada operação pensar em
+- Recurso
+- Método
+- URL
+- Headers
+- Body
+- Status code
+- Resposta
+- Idempotência
+
+### Exercício
+Projetar endpoints para:
+- favoritar produto
+- alterar endereço
+- pagar pedido
+- consultar estoque</pre>
+  </section>
+</main>
+<footer>Aula 02 • Plano de Mentoria Backend</footer>
+</body>
+</html>
