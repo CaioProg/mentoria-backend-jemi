@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 01 — Como um backend funciona de ponta a ponta</title>
+<style>
+:root {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --primary-soft: #eef2ff;
+  --border: #e5e7eb;
+  --success: #0f766e;
+  --success-soft: #ecfdf5;
+  --warning: #a16207;
+  --warning-soft: #fefce8;
+  --code: #111827;
+  --shadow: 0 10px 30px rgba(31, 41, 55, 0.08);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+}
+a { color: var(--primary); }
+.container { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+header {
+  background:
+    radial-gradient(circle at top right, rgba(99,102,241,.28), transparent 35%),
+    linear-gradient(135deg, #111827, #312e81);
+  color: white;
+  padding: 58px 0 46px;
+}
+header h1 { font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1.08; margin: 0 0 14px; max-width: 900px; }
+header p { max-width: 850px; margin: 0; color: #dbeafe; font-size: 1.05rem; }
+.badge {
+  display: inline-block; margin-bottom: 16px; padding: 7px 11px; border-radius: 999px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  font-size: .82rem; font-weight: 800; letter-spacing: .04em;
+}
+main { padding: 36px 0 70px; }
+section {
+  background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+  padding: 27px; margin-bottom: 22px; box-shadow: var(--shadow);
+}
+h2 { margin-top: 0; font-size: 1.42rem; }
+h3 { margin-bottom: 7px; }
+.muted { color: var(--muted); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.stat, .mini-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 19px;
+}
+.stat strong { display: block; color: var(--primary); font-size: 1.7rem; }
+.note {
+  background: var(--primary-soft); border-left: 4px solid var(--primary);
+  padding: 16px 18px; border-radius: 12px;
+}
+.success {
+  background: var(--success-soft); border-left: 4px solid var(--success);
+  padding: 16px 18px; border-radius: 12px;
+}
+.warning {
+  background: var(--warning-soft); border-left: 4px solid #eab308;
+  padding: 16px 18px; border-radius: 12px;
+}
+.breadcrumb {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px;
+  text-decoration: none; color: #dbeafe; font-weight: 650;
+}
+.agenda {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.agenda div {
+  padding: 15px; border: 1px solid var(--border); border-radius: 14px; background: #f9fafb;
+}
+.agenda b { color: var(--primary); display: block; }
+.flow {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 9px; margin: 18px 0 4px;
+}
+.flow span {
+  padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: #f9fafb; font-weight: 700;
+}
+.flow i { color: var(--primary); font-style: normal; font-weight: 900; }
+code, .code {
+  background: var(--code); color: #e5e7eb; padding: 2px 6px; border-radius: 6px;
+}
+pre {
+  overflow-x: auto; background: var(--code); color: #e5e7eb; padding: 18px;
+  border-radius: 14px; line-height: 1.5;
+}
+.material {
+  display: block; text-decoration: none; color: inherit; padding: 16px 17px;
+  border: 1px solid var(--border); border-radius: 14px; margin: 10px 0;
+  transition: .16s ease;
+}
+.material:hover { border-color: #a5b4fc; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(31,41,55,.06); }
+.material strong { display: block; color: var(--primary); }
+.material small { color: var(--muted); }
+.checklist li, .questions li { margin: 8px 0; }
+.pill {
+  display: inline-block; background: var(--primary-soft); color: var(--primary-dark);
+  border-radius: 999px; padding: 4px 9px; font-size: .78rem; font-weight: 750;
+}
+footer { text-align: center; color: var(--muted); padding: 0 0 38px; font-size: .9rem; }
+@media (max-width: 850px) {
+  .grid-3, .grid-2, .agenda { grid-template-columns: 1fr; }
+}
+@media print {
+  body { background: white; }
+  section, .stat { box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <a class="breadcrumb" href="index.html">← Voltar para o plano</a>
+    <div class="badge">AULA 01 • FUNDAMENTOS</div>
+    <h1>Como um backend funciona de ponta a ponta</h1>
+    <p>O objetivo não é falar de framework. É criar um modelo mental do que acontece entre uma ação do usuário e a resposta do sistema.</p>
+  </div>
+</header>
+
+<main class="container">
+  <div class="grid-3" style="margin-bottom:22px">
+    <div class="stat"><strong>1 hora</strong><span class="muted">Duração</span></div>
+    <div class="stat"><strong>Macro</strong><span class="muted">Nível de abstração</span></div>
+    <div class="stat"><strong>Loja</strong><span class="muted">Laboratório prático</span></div>
+  </div>
+
+  <section>
+    <h2>Objetivo da aula</h2>
+    <p>Ao final, ela deve conseguir explicar, sem depender de código, o caminho percorrido por uma requisição e identificar a responsabilidade de cada parte.</p>
+    <div class="flow">
+      <span>Cliente</span><i>→</i><span>HTTP</span><i>→</i><span>API</span><i>→</i>
+      <span>Regra de negócio</span><i>→</i><span>Banco / Integrações</span><i>→</i><span>Resposta</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>O que explicar</h2>
+    <div class="grid-2">
+      <div class="mini-card">
+        <span class="pill">1</span>
+        <h3>Cliente e servidor</h3>
+        <p>O cliente inicia uma operação. O backend recebe uma requisição, toma decisões, acessa recursos e devolve uma resposta.</p>
+      </div>
+      <div class="mini-card">
+        <span class="pill">2</span>
+        <h3>Request e response</h3>
+        <p>Uma requisição carrega intenção e dados. A resposta comunica o resultado. O protocolo HTTP é o contrato de transporte mais comum em APIs web.</p>
+      </div>
+      <div class="mini-card">
+        <span class="pill">3</span>
+        <h3>API não é a regra de negócio</h3>
+        <p>O endpoint é uma porta de entrada. Regras como “não vender produto sem estoque” pertencem ao comportamento do sistema, não ao protocolo.</p>
+      </div>
+      <div class="mini-card">
+        <span class="pill">4</span>
+        <h3>Persistência</h3>
+        <p>O banco mantém estado durável. É uma boa oportunidade para diferenciar memória do processo, cache e persistência.</p>
+      </div>
+      <div class="mini-card">
+        <span class="pill">5</span>
+        <h3>Integrações externas</h3>
+        <p>Pagamento, e-mail, frete e outros serviços estão fora do controle direto da aplicação e introduzem latência e falhas.</p>
+      </div>
+      <div class="mini-card">
+        <span class="pill">6</span>
+        <h3>Backend é coordenação</h3>
+        <p>Muito do trabalho é coordenar regras, dados e sistemas externos de maneira previsível, segura e observável.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Roteiro sugerido para os 60 minutos</h2>
+    <div class="agenda">
+      <div><b>0–10 min</b>Pergunte como ela imagina que uma compra funciona hoje.</div>
+      <div><b>10–25 min</b>Monte o fluxo completo no quadro, sem código.</div>
+      <div><b>25–50 min</b>Façam juntos o fluxo “Finalizar compra”.</div>
+      <div><b>50–60 min</b>Peça para ela recontar o fluxo e registre dúvidas.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Exercício principal — “Finalizar compra”</h2>
+    <p>Comece apenas com:</p>
+    <div class="note"><strong>Requisito:</strong> “O usuário possui itens no carrinho e clicou em Finalizar compra.”</div>
+    <p>Peça para ela construir a sequência antes de você completar. Um possível fluxo:</p>
+    <ol class="checklist">
+      <li>O cliente envia a intenção de criar/finalizar um pedido.</li>
+      <li>A API identifica e valida o usuário.</li>
+      <li>O sistema busca ou recebe os itens envolvidos.</li>
+      <li>Valida disponibilidade e regras de negócio.</li>
+      <li>Calcula/prepara valores.</li>
+      <li>Persiste o pedido.</li>
+      <li>Aciona ou agenda o pagamento.</li>
+      <li>Atualiza/reserva estoque conforme a estratégia adotada.</li>
+      <li>Retorna uma resposta compreensível ao cliente.</li>
+    </ol>
+    <div class="warning"><strong>Importante:</strong> não tente chegar à “arquitetura perfeita”. O objetivo é fazê-la perceber que uma ação simples na tela atravessa várias responsabilidades.</div>
+  </section>
+
+  <section>
+    <h2>Perguntas para conduzir a conversa</h2>
+    <ul class="questions">
+      <li>Quem inicia a operação?</li>
+      <li>Que informações o backend precisa receber?</li>
+      <li>O backend deveria confiar no preço enviado pelo frontend?</li>
+      <li>Onde o preço real do produto deveria ser obtido?</li>
+      <li>O que precisa ser validado antes de criar o pedido?</li>
+      <li>O que acontece se o banco estiver indisponível?</li>
+      <li>E se o provedor de pagamento demorar 20 segundos?</li>
+      <li>Qual parte do fluxo pertence ao nosso sistema e qual pertence a terceiros?</li>
+      <li>Como um QA poderia descobrir em qual etapa a operação falhou?</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Mini desafio</h2>
+    <div class="success">
+      <strong>Sem escrever código:</strong> peça para ela desenhar o fluxo de “Consultar meus pedidos” e explicar o que muda em relação a “Finalizar compra”.
+    </div>
+    <p>Você pode avaliar se ela percebe que a consulta tende a ser uma operação de leitura, envolve autenticação/autorização, consulta ao banco e transformação em resposta, mas não deveria produzir efeitos colaterais no domínio.</p>
+  </section>
+
+  <section>
+    <h2>O que ela deve sair sabendo</h2>
+    <ul class="checklist">
+      <li>Explicar cliente × servidor.</li>
+      <li>Explicar request × response.</li>
+      <li>Diferenciar API, regra de negócio e persistência.</li>
+      <li>Visualizar integrações externas como fontes de falha.</li>
+      <li>Seguir mentalmente uma operação de ponta a ponta.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Materiais de apoio</h2>
+    <a class="material" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview" target="_blank" rel="noopener">
+      <strong>MDN — Overview of HTTP ↗</strong>
+      <small>Boa introdução ao modelo cliente-servidor, requests, responses e componentes HTTP.</small>
+    </a>
+    <a class="material" href="https://learn.microsoft.com/en-us/azure/architecture/web-apps/idea/scalable-ecommerce-web-app" target="_blank" rel="noopener">
+      <strong>Microsoft Learn — Basic Web Application Architecture ↗</strong>
+      <small>Exemplo visual de uma aplicação web, API, banco e observabilidade.</small>
+    </a>
+    <a class="material" href="https://roadmap.sh/backend" target="_blank" rel="noopener">
+      <strong>roadmap.sh — Backend Developer Roadmap ↗</strong>
+      <small>Serve como mapa dos assuntos que aparecerão ao longo da mentoria.</small>
+    </a>
+  </section>
+
+  <section>
+    <h2>Anotação sugerida para o Notion</h2>
+    <pre>## Aula 01 — Como um backend funciona
+
+### Fluxo principal
+Cliente → HTTP → API → Regra de negócio → Banco/Integrações → Resposta
+
+### O que aprendi
+- 
+- 
+- 
+
+### O que ainda tenho dúvida
+- 
+
+### Exercício
+Desenhar o fluxo "Consultar meus pedidos".</pre>
+  </section>
+</main>
+<footer>Aula 01 • Plano de Mentoria Backend</footer>
+</body>
+</html>
