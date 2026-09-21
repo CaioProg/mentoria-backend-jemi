@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plano de Mentoria Backend</title>
+  <style>
+  
+:root {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --primary-soft: #eef2ff;
+  --border: #e5e7eb;
+  --success: #0f766e;
+  --success-soft: #ecfdf5;
+  --warning: #a16207;
+  --warning-soft: #fefce8;
+  --code: #111827;
+  --shadow: 0 10px 30px rgba(31, 41, 55, 0.08);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+}
+a { color: var(--primary); }
+.container { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+header {
+  background:
+    radial-gradient(circle at top right, rgba(99,102,241,.28), transparent 35%),
+    linear-gradient(135deg, #111827, #312e81);
+  color: white;
+  padding: 58px 0 46px;
+}
+header h1 { font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1.08; margin: 0 0 14px; max-width: 900px; }
+header p { max-width: 850px; margin: 0; color: #dbeafe; font-size: 1.05rem; }
+.badge {
+  display: inline-block; margin-bottom: 16px; padding: 7px 11px; border-radius: 999px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  font-size: .82rem; font-weight: 800; letter-spacing: .04em;
+}
+main { padding: 36px 0 70px; }
+section {
+  background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+  padding: 27px; margin-bottom: 22px; box-shadow: var(--shadow);
+}
+h2 { margin-top: 0; font-size: 1.42rem; }
+h3 { margin-bottom: 7px; }
+.muted { color: var(--muted); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.stat, .mini-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 19px;
+}
+.stat strong { display: block; color: var(--primary); font-size: 1.7rem; }
+.note {
+  background: var(--primary-soft); border-left: 4px solid var(--primary);
+  padding: 16px 18px; border-radius: 12px;
+}
+.success {
+  background: var(--success-soft); border-left: 4px solid var(--success);
+  padding: 16px 18px; border-radius: 12px;
+}
+.warning {
+  background: var(--warning-soft); border-left: 4px solid #eab308;
+  padding: 16px 18px; border-radius: 12px;
+}
+.breadcrumb {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px;
+  text-decoration: none; color: #dbeafe; font-weight: 650;
+}
+.agenda {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.agenda div {
+  padding: 15px; border: 1px solid var(--border); border-radius: 14px; background: #f9fafb;
+}
+.agenda b { color: var(--primary); display: block; }
+.flow {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 9px; margin: 18px 0 4px;
+}
+.flow span {
+  padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: #f9fafb; font-weight: 700;
+}
+.flow i { color: var(--primary); font-style: normal; font-weight: 900; }
+code, .code {
+  background: var(--code); color: #e5e7eb; padding: 2px 6px; border-radius: 6px;
+}
+pre {
+  overflow-x: auto; background: var(--code); color: #e5e7eb; padding: 18px;
+  border-radius: 14px; line-height: 1.5;
+}
+.material {
+  display: block; text-decoration: none; color: inherit; padding: 16px 17px;
+  border: 1px solid var(--border); border-radius: 14px; margin: 10px 0;
+  transition: .16s ease;
+}
+.material:hover { border-color: #a5b4fc; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(31,41,55,.06); }
+.material strong { display: block; color: var(--primary); }
+.material small { color: var(--muted); }
+.checklist li, .questions li { margin: 8px 0; }
+.pill {
+  display: inline-block; background: var(--primary-soft); color: var(--primary-dark);
+  border-radius: 999px; padding: 4px 9px; font-size: .78rem; font-weight: 750;
+}
+footer { text-align: center; color: var(--muted); padding: 0 0 38px; font-size: .9rem; }
+@media (max-width: 850px) {
+  .grid-3, .grid-2, .agenda { grid-template-columns: 1fr; }
+}
+@media print {
+  body { background: white; }
+  section, .stat { box-shadow: none; }
+}
+
+  .lesson-list { display:grid; gap:14px; }
+  .lesson {
+    display:grid; grid-template-columns:72px 1fr auto; gap:18px; align-items:center;
+    padding:18px; border:1px solid var(--border); border-radius:16px; background:#fff;
+  }
+  .lesson.active { cursor:pointer; transition:.16s ease; text-decoration:none; color:inherit; }
+  .lesson.active:hover {
+    transform:translateY(-2px); border-color:#a5b4fc;
+    box-shadow:0 10px 25px rgba(79,70,229,.10);
+  }
+  .lesson-number {
+    width:52px; height:52px; border-radius:14px; display:grid; place-items:center;
+    background:var(--primary); color:white; font-weight:800; font-size:1.1rem;
+  }
+  .lesson h3 { margin:0 0 6px; }
+  .lesson p { margin:0; color:var(--muted); }
+  .open { font-weight:800; color:var(--primary); white-space:nowrap; }
+  .soon { color:#9ca3af; font-size:.85rem; font-weight:700; }
+  @media (max-width:760px) {
+    .lesson { grid-template-columns:58px 1fr; }
+    .open,.soon { grid-column:2; }
+  }
+  </style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <div class="badge">MENTORIA • BACKEND • VISÃO MACRO</div>
+    <h1>Plano de Mentoria Backend com foco em engenharia e IA</h1>
+    <p>8 semanas, 16 encontros e a loja online como laboratório para raciocínio de engenharia.</p>
+  </div>
+</header>
+
+<main class="container">
+  <div class="grid-3" style="margin-bottom:22px">
+    <div class="stat"><strong>8 semanas</strong><span class="muted">Duração do ciclo</span></div>
+    <div class="stat"><strong>16 aulas</strong><span class="muted">2 encontros por semana</span></div>
+    <div class="stat"><strong>1 hora</strong><span class="muted">Duração de cada encontro</span></div>
+  </div>
+
+  <section>
+    <h2>Objetivo</h2>
+    <p>O foco é aprender a pensar como alguém responsável por um backend: entender requisitos, fluxo, dados, contratos, falhas, testes, observabilidade e decisões de arquitetura.</p>
+    <div class="note"><strong>Regra:</strong> IA pode escrever o código. A implementação só está pronta quando a mentorada consegue explicar o que foi construído e quais são seus riscos.</div>
+  </section>
+
+  <section>
+    <h2>Plano de aulas</h2>
+    <p class="muted">As aulas 01 e 02 já possuem páginas detalhadas. Clique nelas para abrir.</p>
+    <div class="lesson-list">
+
+      <a class="lesson active" href="aula-01.html">
+        <div class="lesson-number">01</div>
+        <div><h3>Como um backend funciona de ponta a ponta</h3><p>Cliente → HTTP → API → regras → banco → resposta.</p></div>
+        <div class="open">Abrir aula →</div>
+      </a>
+
+      <a class="lesson active" href="aula-02.html">
+        <div class="lesson-number">02</div>
+        <div><h3>HTTP e desenho de APIs</h3><p>Métodos, recursos, contratos, status codes, headers e idempotência.</p></div>
+        <div class="open">Abrir aula →</div>
+      </a>
+
+      <div class="lesson"><div class="lesson-number">03</div><div><h3>Modelagem de domínio e regras de negócio</h3><p>Produto, Pedido, ItemPedido, Pagamento e Estoque.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">04</div><div><h3>Banco de dados e modelagem</h3><p>PK, FK, constraints, normalização e índices.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">05</div><div><h3>Como o banco executa consultas</h3><p>Scans, joins, índices, leitura lógica, N+1 e planos de execução.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">06</div><div><h3>Arquitetura e responsabilidades</h3><p>API, aplicação/domínio, banco, integrações, coesão e acoplamento.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">07</div><div><h3>Estratégia de testes</h3><p>Unitário, integração, contrato e E2E.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">08</div><div><h3>Autenticação, autorização e segurança</h3><p>Login, JWT, permissões, validação e riscos comuns.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">09</div><div><h3>Falhas e resiliência</h3><p>Timeout, retry, circuit breaker e idempotência.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">10</div><div><h3>Mensageria e processamento assíncrono</h3><p>Eventos, filas, consumers, entrega duplicada e DLQ.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">11</div><div><h3>Cache, performance e escala</h3><p>Cache, invalidação, stateless e escala horizontal.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">12</div><div><h3>Observabilidade e debugging</h3><p>Logs, métricas, traces, correlation ID e OpenTelemetry.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">13</div><div><h3>Infraestrutura e deploy</h3><p>Docker, secrets, CI/CD, Kubernetes, rollout e rollback.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">14</div><div><h3>System Design</h3><p>Capacidade, gargalos e decisões de arquitetura em escala.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">15</div><div><h3>Engenharia de software com IA</h3><p>Contexto, decomposição de tarefas, geração, revisão e validação.</p></div><div class="soon">Em breve</div></div>
+      <div class="lesson"><div class="lesson-number">16</div><div><h3>Desafio final</h3><p>Arquitetar uma funcionalidade de ponta a ponta.</p></div><div class="soon">Em breve</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Estrutura de cada encontro</h2>
+    <div class="agenda">
+      <div><b>10 min</b>Revisão e dúvidas</div>
+      <div><b>15–20 min</b>Conceito principal</div>
+      <div><b>25–30 min</b>Exercício e discussão</div>
+      <div><b>5 min</b>Anotações no Notion</div>
+    </div>
+  </section>
+</main>
+<footer>Plano de Mentoria Backend • Ciclo de 8 semanas</footer>
+</body>
+</html>
