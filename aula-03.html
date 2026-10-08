@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 03 — Modelagem de domínio e regras de negócio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Cpath d='M25 20 13 32l12 12M39 20l12 12-12 12M35 16 29 48' fill='none' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --primary-soft: #eef2ff;
+  --border: #e5e7eb;
+  --success: #0f766e;
+  --success-soft: #ecfdf5;
+  --warning: #a16207;
+  --warning-soft: #fefce8;
+  --code: #111827;
+  --shadow: 0 10px 30px rgba(31, 41, 55, 0.08);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+}
+a { color: var(--primary); }
+.container { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+header {
+  background:
+    radial-gradient(circle at top right, rgba(99,102,241,.28), transparent 35%),
+    linear-gradient(135deg, #111827, #312e81);
+  color: white;
+  padding: 58px 0 46px;
+}
+header h1 { font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1.08; margin: 0 0 14px; max-width: 900px; }
+header p { max-width: 850px; margin: 0; color: #dbeafe; font-size: 1.05rem; }
+.badge {
+  display: inline-block; margin-bottom: 16px; padding: 7px 11px; border-radius: 999px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  font-size: .82rem; font-weight: 800; letter-spacing: .04em;
+}
+main { padding: 36px 0 70px; }
+
+.brand-icon {
+  width: 52px; height: 52px; display: grid; place-items: center;
+  margin-bottom: 16px; border-radius: 15px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  color: white; font-weight: 900; font-size: 1rem; letter-spacing: -.08em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.project-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 18px; padding: 10px 14px; border-radius: 12px;
+  color: white; text-decoration: none; font-weight: 750;
+  background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.20);
+  transition: .16s ease;
+}
+.project-link:hover {
+  background: rgba(255,255,255,.16);
+  transform: translateY(-1px);
+}
+
+section {
+  background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+  padding: 27px; margin-bottom: 22px; box-shadow: var(--shadow);
+}
+h2 { margin-top: 0; font-size: 1.42rem; }
+h3 { margin-bottom: 7px; }
+.muted { color: var(--muted); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.stat, .mini-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 19px;
+}
+.stat strong { display: block; color: var(--primary); font-size: 1.7rem; }
+.note {
+  background: var(--primary-soft); border-left: 4px solid var(--primary);
+  padding: 16px 18px; border-radius: 12px;
+}
+.success {
+  background: var(--success-soft); border-left: 4px solid var(--success);
+  padding: 16px 18px; border-radius: 12px;
+}
+.warning {
+  background: var(--warning-soft); border-left: 4px solid #eab308;
+  padding: 16px 18px; border-radius: 12px;
+}
+.breadcrumb {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px;
+  text-decoration: none; color: #dbeafe; font-weight: 650;
+}
+.agenda {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.agenda div {
+  padding: 15px; border: 1px solid var(--border); border-radius: 14px; background: #f9fafb;
+}
+.agenda b { color: var(--primary); display: block; }
+.flow {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 9px; margin: 18px 0 4px;
+}
+.flow span {
+  padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: #f9fafb; font-weight: 700;
+}
+.flow i { color: var(--primary); font-style: normal; font-weight: 900; }
+code, .code {
+  background: var(--code); color: #e5e7eb; padding: 2px 6px; border-radius: 6px;
+}
+pre {
+  overflow-x: auto; background: var(--code); color: #e5e7eb; padding: 18px;
+  border-radius: 14px; line-height: 1.5;
+}
+.material {
+  display: block; text-decoration: none; color: inherit; padding: 16px 17px;
+  border: 1px solid var(--border); border-radius: 14px; margin: 10px 0;
+  transition: .16s ease;
+}
+.material:hover { border-color: #a5b4fc; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(31,41,55,.06); }
+.material strong { display: block; color: var(--primary); }
+.material small { color: var(--muted); }
+.checklist li, .questions li { margin: 8px 0; }
+.pill {
+  display: inline-block; background: var(--primary-soft); color: var(--primary-dark);
+  border-radius: 999px; padding: 4px 9px; font-size: .78rem; font-weight: 750;
+}
+footer { text-align: center; color: var(--muted); padding: 0 0 38px; font-size: .9rem; }
+@media (max-width: 850px) {
+  .grid-3, .grid-2, .agenda { grid-template-columns: 1fr; }
+}
+@media print {
+  body { background: white; }
+  section, .stat { box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<header><div class="container">
+  <div class="brand-icon" aria-hidden="true">&lt;/&gt;</div>
+  <a class="breadcrumb" href="index.html">← Voltar para o plano</a>
+  <div class="badge">AULA 03 • DOMÍNIO</div>
+  <h1>Modelagem de domínio e regras de negócio</h1>
+  <p>Aprender a identificar os conceitos e as regras que fazem uma loja funcionar, antes de desenhar tabelas ou classes.</p>
+  <a class="project-link" href="https://github.com/JemillySAguilar/EloIs-store" target="_blank" rel="noopener">↗ EloIs Store no GitHub</a>
+</div></header>
+<main class="container">
+  <div class="grid-3" style="margin-bottom:22px">
+    <div class="stat"><strong>1 hora</strong><span class="muted">Duração</span></div>
+    <div class="stat"><strong>Domínio</strong><span class="muted">Conceito central</span></div>
+    <div class="stat"><strong>Loja</strong><span class="muted">Laboratório prático</span></div>
+  </div>
+
+  <section>
+    <h2>Objetivo da aula</h2>
+    <p>Ao final, a Jemi deve conseguir transformar requisitos em <strong>conceitos do negócio, responsabilidades e regras verificáveis</strong>, sem confundir entidade de domínio com endpoint, classe ou tabela de banco.</p>
+    <div class="note"><strong>Mensagem principal:</strong> uma regra de negócio deve continuar válida independentemente de a operação chegar por HTTP, fila ou rotina interna. Primeiro entendemos o comportamento, depois decidimos a tecnologia.</div>
+  </section>
+  <section>
+    <h2>O que é o domínio de uma loja?</h2>
+    <p>Domínio é o conjunto de conceitos, decisões e regras que fazem a loja funcionar. Dizer “o sistema salva um pedido” não explica <em>quando</em> ele pode ser criado, <em>por quanto</em> e <em>o que acontece</em> se o pagamento falhar.</p>
+    <div class="grid-3">
+      <div class="mini-card"><span class="pill">ENTIDADE</span><h3>Identidade ao longo do tempo</h3><p>Um <strong>Pedido</strong> continua sendo o mesmo pedido quando seu status muda. Seu identificador importa.</p></div>
+      <div class="mini-card"><span class="pill">VALOR</span><h3>Conceito imutável</h3><p>Preço, quantidade e endereço podem ser modelados como valores com validações próprias. R$ 20 não é igual a 20 unidades.</p></div>
+      <div class="mini-card"><span class="pill">REGRA</span><h3>Comportamento permitido</h3><p>Não confirmar pedido sem o resultado apropriado do pagamento. Não reservar mais estoque do que existe.</p></div>
+    </div>
+  </section>
+  <section>
+    <h2>Modelo conceitual da loja</h2>
+    <p>Comece com cinco conceitos. Peça para a Jemi explicar cada um, suas informações e o que ele <strong>pode decidir</strong>.</p>
+    <div class="grid-2">
+      <div class="mini-card"><h3>Produto</h3><p>Identidade, nome, SKU, preço atual e situação de venda. Um produto pode aparecer em muitos pedidos.</p></div>
+      <div class="mini-card"><h3>Pedido</h3><p>Cliente, itens, data, estado e valor acordado. Coordena a intenção de compra e preserva o histórico.</p></div>
+      <div class="mini-card"><h3>ItemPedido</h3><p>Produto referenciado, <strong>quantidade</strong> e <strong>preço unitário registrado na compra</strong>. O histórico não deve mudar se o catálogo mudar.</p></div>
+      <div class="mini-card"><h3>Pagamento</h3><p>Tentativa de cobrança, valor, provedor, referência externa e resultado. Pode haver mais de uma tentativa para um pedido.</p></div>
+      <div class="mini-card"><h3>Estoque</h3><p>Quantidade disponível e quantidade reservada de cada produto. Exige decisões explícitas para reserva, liberação e confirmação.</p></div>
+      <div class="mini-card"><h3>Cliente</h3><p>Quem compra. O pedido registra a referência ao cliente; autorização e dados pessoais serão aprofundados em outra aula.</p></div>
+    </div>
+    <div class="flow"><span>Cliente</span><i>→</i><span>Pedido</span><i>→</i><span>Itens</span><i>→</i><span>Produto</span></div>
+    <div class="flow"><span>Pedido</span><i>→</i><span>Pagamento(s)</span><span>Produto</span><i>→</i><span>Estoque</span></div>
+    <div class="warning"><strong>Pergunta-chave:</strong> se o produto custava R$ 40 no dia da compra e agora custa R$ 50, quanto deve aparecer no pedido antigo? Guarde o preço efetivamente aplicado em <code>ItemPedido</code>, não o busque apenas do preço atual.</div>
+  </section>
+  <section>
+    <h2>Invariantes: regras que nunca podem ser quebradas</h2>
+    <p>Uma <strong>invariante</strong> é uma condição que deve permanecer verdadeira nos estados válidos do negócio. Ela não se limita a validar se o JSON está preenchido.</p>
+    <ol class="checklist">
+      <li>Um item de pedido tem quantidade inteira <strong>maior que zero</strong>.</li>
+      <li>O preço aplicado à compra é definido pelo servidor e congelado no pedido — não é confiado ao frontend.</li>
+      <li>Não se pode reservar quantidade maior que a <strong>disponível</strong>; concorrência importa.</li>
+      <li>Um pedido cancelado não pode ser confirmado sem uma operação explícita de reversão definida pelo negócio.</li>
+      <li>Um pagamento recusado não equivale a um pedido pago; o estado deve representar o resultado real.</li>
+    </ol>
+    <div class="note"><strong>Validação × regra de domínio:</strong> “campo quantidade ausente” é um erro de entrada. “quantidade maior que estoque disponível” é uma regra do negócio. Ambas podem ter validação na borda, mas a regra deve ser protegida no núcleo.</div>
+  </section>
+  <section>
+    <h2>Estados e transições do pedido</h2>
+    <p>Desenhem uma máquina de estados simples, <strong>apenas como proposta para a loja</strong>. O desenho final depende das decisões de pagamento e reserva de estoque.</p>
+    <pre>CRIADO → AGUARDANDO_PAGAMENTO → PAGO → CONCLUIDO
+   │             │                  │
+   └─────────────┴────→ CANCELADO ←─┘ (se permitido)
+
+Pagamento recusado: pode manter AGUARDANDO_PAGAMENTO
+para nova tentativa, ou cancelar após um limite definido.</pre>
+    <p>Pergunte: <em>quem autoriza uma transição?</em> Um webhook duplicado pode confirmar duas vezes? Como evitar enviar duas confirmações? Onde liberamos o estoque reservado se o pagamento não ocorrer?</p>
+    <div class="warning"><strong>Trade-off importante:</strong> reservar antes de cobrar reduz o risco de venda sem estoque, mas exige expiração/liberação. Cobrar antes de reservar pode exigir estorno quando não houver estoque. Evite apresentar um desses fluxos como regra universal.</div>
+  </section>
+  <section>
+    <h2>Roteiro sugerido para os 60 minutos</h2>
+    <div class="agenda">
+      <div><b>0–10 min</b>Retome o contrato da aula 02: o que a API precisa fazer ao receber um pedido?</div>
+      <div><b>10–25 min</b>Identifique entidades, valores e invariantes sem falar em tabelas.</div>
+      <div><b>25–50 min</b>Modelem o pedido e seus estados; debatam estoque e pagamento.</div>
+      <div><b>50–60 min</b>Explore casos de erro e registre três regras de negócio em linguagem simples.</div>
+    </div>
+  </section>
+  <section>
+    <h2>Exercício principal — modelar “Finalizar compra”</h2>
+    <div class="note"><strong>Requisito:</strong> “Uma pessoa autenticada compra duas unidades de um produto. Ela vê o valor final e acompanha o estado do pedido, mesmo que o pagamento demore.”</div>
+    <p>Peça que a Jemi entregue no quadro, sem implementar nada:</p>
+    <ol class="checklist">
+      <li>Os conceitos necessários (Produto, Estoque, Pedido, ItemPedido e Pagamento) e suas relações.</li>
+      <li>Os dados mínimos de cada conceito e quais são históricos, como preço do item.</li>
+      <li>Três invariantes e qual parte do sistema as protege.</li>
+      <li>Os estados possíveis do pedido e quais transições são permitidas.</li>
+      <li>O que fazer se o pagamento for recusado ou a reserva de estoque falhar.</li>
+    </ol>
+    <div class="success"><strong>Critério de sucesso:</strong> ela consegue justificar por que um pedido preserva seu preço, por que pagamento não é sinônimo de pedido e por que estoque precisa considerar concorrência.</div>
+  </section>
+  <section>
+    <h2>Perguntas de QA e casos-limite</h2>
+    <div class="grid-2">
+      <div class="mini-card"><h3>Quantidade zero</h3><p>O que o sistema responde? A entrada inválida gera algum pedido?</p></div>
+      <div class="mini-card"><h3>Produto inativo</h3><p>É permitido iniciar nova compra? O histórico de compras antigas continua visível?</p></div>
+      <div class="mini-card"><h3>Última unidade</h3><p>Duas pessoas tentam comprar ao mesmo tempo. Qual delas consegue reservar?</p></div>
+      <div class="mini-card"><h3>Webhook duplicado</h3><p>Se “pagamento aprovado” chega duas vezes, o pedido deve ser confirmado uma única vez.</p></div>
+      <div class="mini-card"><h3>Preço alterado</h3><p>O pedido antigo muda? E se o preço mudar antes de confirmar a compra?</p></div>
+      <div class="mini-card"><h3>Pagamento recusado</h3><p>Pedido e estoque devem ficar em quais estados? Existe prazo para nova tentativa?</p></div>
+    </div>
+  </section>
+  <section>
+    <h2>Mini desafio</h2>
+    <div class="success"><strong>Cenário:</strong> um pedido pago precisa ser cancelado. Desenhe as regras e os estados necessários para <strong>cancelamento, liberação de estoque e possível estorno</strong>. Quais etapas são do domínio? Quais exigem integração externa?</div>
+    <p>Não há um único fluxo correto. Observe se a solução separa a decisão de cancelar do resultado de operações externas e considera falhas intermediárias.</p>
+  </section>
+  <section>
+    <h2>O que ela deve sair sabendo</h2>
+    <ul class="checklist">
+      <li>Explicar domínio, entidade, valor e invariante com exemplos da loja.</li>
+      <li>Diferenciar validação de entrada de regra de negócio.</li>
+      <li>Descrever relações entre Pedido, ItemPedido, Produto, Estoque e Pagamento.</li>
+      <li>Modelar transições de estado e identificar transições inválidas.</li>
+      <li>Pensar em casos de teste antes de discutir implementação.</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Materiais de apoio</h2>
+    <a class="material" href="https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis" target="_blank" rel="noopener"><strong>Microsoft Learn — Domain analysis ↗</strong><small>Como identificar conceitos e delimitar responsabilidades de negócio. Aplique os princípios, sem antecipar microserviços.</small></a>
+    <a class="material" href="https://martinfowler.com/eaaCatalog/domainModel.html" target="_blank" rel="noopener"><strong>Martin Fowler — Domain Model ↗</strong><small>Referência conceitual sobre comportamentos e regras no modelo de domínio.</small></a>
+    <a class="material" href="https://github.com/JemillySAguilar/EloIs-store" target="_blank" rel="noopener"><strong>EloIs Store — laboratório da mentoria ↗</strong><small>Compare os conceitos desenhados com o que já existe no projeto.</small></a>
+  </section>
+  <section>
+    <h2>Anotação sugerida para o Notion</h2>
+    <pre>## Aula 03 — Domínio e regras de negócio
+
+### Conceitos
+Produto / Estoque / Pedido / ItemPedido / Pagamento
+
+### Três invariantes
+1.
+2.
+3.
+
+### Estados do Pedido
+- Estado inicial:
+- Transições válidas:
+- Transições proibidas:
+
+### Pontos de atenção
+- Preço histórico:
+- Concorrência no estoque:
+- Pagamento recusado / duplicado:
+
+### Tarefa
+Desenhar cancelamento de um pedido já pago.</pre>
+  </section>
+
+  <section>
+    <h2>Continuar a mentoria</h2>
+    <div class="grid-2">
+      <a class="material" href="aula-02.html"><strong>← Aula 02: HTTP e desenho de APIs</strong><small>Revisar os fundamentos antes de avançar.</small></a>
+      <a class="material" href="aula-04.html"><strong>Aula 04 →</strong><small>Banco de dados e modelagem</small></a>
+    </div>
+  </section>
+</main>
+<footer>Aula 03 • Plano de Mentoria Backend</footer>
+</body>
+</html>
