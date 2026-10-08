@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 04 — Banco de dados e modelagem</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Cpath d='M25 20 13 32l12 12M39 20l12 12-12 12M35 16 29 48' fill='none' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --primary-soft: #eef2ff;
+  --border: #e5e7eb;
+  --success: #0f766e;
+  --success-soft: #ecfdf5;
+  --warning: #a16207;
+  --warning-soft: #fefce8;
+  --code: #111827;
+  --shadow: 0 10px 30px rgba(31, 41, 55, 0.08);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+}
+a { color: var(--primary); }
+.container { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+header {
+  background:
+    radial-gradient(circle at top right, rgba(99,102,241,.28), transparent 35%),
+    linear-gradient(135deg, #111827, #312e81);
+  color: white;
+  padding: 58px 0 46px;
+}
+header h1 { font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1.08; margin: 0 0 14px; max-width: 900px; }
+header p { max-width: 850px; margin: 0; color: #dbeafe; font-size: 1.05rem; }
+.badge {
+  display: inline-block; margin-bottom: 16px; padding: 7px 11px; border-radius: 999px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  font-size: .82rem; font-weight: 800; letter-spacing: .04em;
+}
+main { padding: 36px 0 70px; }
+
+.brand-icon {
+  width: 52px; height: 52px; display: grid; place-items: center;
+  margin-bottom: 16px; border-radius: 15px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  color: white; font-weight: 900; font-size: 1rem; letter-spacing: -.08em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.project-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 18px; padding: 10px 14px; border-radius: 12px;
+  color: white; text-decoration: none; font-weight: 750;
+  background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.20);
+  transition: .16s ease;
+}
+.project-link:hover {
+  background: rgba(255,255,255,.16);
+  transform: translateY(-1px);
+}
+
+section {
+  background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+  padding: 27px; margin-bottom: 22px; box-shadow: var(--shadow);
+}
+h2 { margin-top: 0; font-size: 1.42rem; }
+h3 { margin-bottom: 7px; }
+.muted { color: var(--muted); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.stat, .mini-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 19px;
+}
+.stat strong { display: block; color: var(--primary); font-size: 1.7rem; }
+.note {
+  background: var(--primary-soft); border-left: 4px solid var(--primary);
+  padding: 16px 18px; border-radius: 12px;
+}
+.success {
+  background: var(--success-soft); border-left: 4px solid var(--success);
+  padding: 16px 18px; border-radius: 12px;
+}
+.warning {
+  background: var(--warning-soft); border-left: 4px solid #eab308;
+  padding: 16px 18px; border-radius: 12px;
+}
+.breadcrumb {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px;
+  text-decoration: none; color: #dbeafe; font-weight: 650;
+}
+.agenda {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.agenda div {
+  padding: 15px; border: 1px solid var(--border); border-radius: 14px; background: #f9fafb;
+}
+.agenda b { color: var(--primary); display: block; }
+.flow {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 9px; margin: 18px 0 4px;
+}
+.flow span {
+  padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: #f9fafb; font-weight: 700;
+}
+.flow i { color: var(--primary); font-style: normal; font-weight: 900; }
+code, .code {
+  background: var(--code); color: #e5e7eb; padding: 2px 6px; border-radius: 6px;
+}
+pre {
+  overflow-x: auto; background: var(--code); color: #e5e7eb; padding: 18px;
+  border-radius: 14px; line-height: 1.5;
+}
+.material {
+  display: block; text-decoration: none; color: inherit; padding: 16px 17px;
+  border: 1px solid var(--border); border-radius: 14px; margin: 10px 0;
+  transition: .16s ease;
+}
+.material:hover { border-color: #a5b4fc; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(31,41,55,.06); }
+.material strong { display: block; color: var(--primary); }
+.material small { color: var(--muted); }
+.checklist li, .questions li { margin: 8px 0; }
+.pill {
+  display: inline-block; background: var(--primary-soft); color: var(--primary-dark);
+  border-radius: 999px; padding: 4px 9px; font-size: .78rem; font-weight: 750;
+}
+footer { text-align: center; color: var(--muted); padding: 0 0 38px; font-size: .9rem; }
+@media (max-width: 850px) {
+  .grid-3, .grid-2, .agenda { grid-template-columns: 1fr; }
+}
+@media print {
+  body { background: white; }
+  section, .stat { box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<header><div class="container">
+  <div class="brand-icon" aria-hidden="true">&lt;/&gt;</div>
+  <a class="breadcrumb" href="index.html">← Voltar para o plano</a>
+  <div class="badge">AULA 04 • DADOS</div>
+  <h1>Banco de dados e modelagem</h1>
+  <p>Transformar regras e relações de negócio em tabelas, chaves, restrições e consultas consistentes.</p>
+  <a class="project-link" href="https://github.com/JemillySAguilar/EloIs-store" target="_blank" rel="noopener">↗ EloIs Store no GitHub</a>
+</div></header>
+<main class="container">
+  <div class="grid-3" style="margin-bottom:22px">
+    <div class="stat"><strong>1 hora</strong><span class="muted">Duração</span></div>
+    <div class="stat"><strong>SQL</strong><span class="muted">Conceito central</span></div>
+    <div class="stat"><strong>Loja</strong><span class="muted">Laboratório prático</span></div>
+  </div>
+
+  <section>
+    <h2>Objetivo da aula</h2>
+    <p>Ao final, a Jemi deve conseguir converter o modelo de domínio da aula 03 em um <strong>modelo relacional coerente</strong>, explicar chaves e relacionamentos, escolher restrições básicas e raciocinar sobre integridade e concorrência.</p>
+    <div class="note"><strong>Mensagem principal:</strong> o banco não é só onde guardamos dados; ele é também uma última linha de proteção para a consistência. O modelo relacional é uma decisão de persistência — não precisa ser idêntico ao modelo de domínio.</div>
+  </section>
+  <section>
+    <h2>Do desenho de domínio para as tabelas</h2>
+    <div class="flow"><span>Regras do negócio</span><i>→</i><span>Entidades e relações</span><i>→</i><span>Tabelas e chaves</span><i>→</i><span>Restrições</span></div>
+    <p>Utilize o mesmo exemplo da loja para definir tabelas iniciais. Não é preciso escrever código da API: o foco é descobrir como os dados se relacionam e o que o banco pode garantir.</p>
+    <div class="grid-2">
+      <div class="mini-card"><h3>produtos + estoques</h3><p>Um produto tem um estoque nesta versão simplificada (relação <strong>1:1</strong>). Com múltiplos depósitos, o modelo precisaria mudar.</p></div>
+      <div class="mini-card"><h3>pedidos + itens_pedido</h3><p>Um pedido possui vários itens (<strong>1:N</strong>). Cada item aponta para um produto e registra preço e quantidade da compra.</p></div>
+      <div class="mini-card"><h3>pedidos + pagamentos</h3><p>Um pedido pode ter várias tentativas de pagamento (<strong>1:N</strong>), mas as regras precisam evitar cobranças em duplicidade.</p></div>
+      <div class="mini-card"><h3>clientes + pedidos</h3><p>Um cliente pode fazer vários pedidos (<strong>1:N</strong>). A ligação ajuda a consultar pedidos de uma pessoa, sem substituir regras de autorização.</p></div>
+    </div>
+  </section>
+  <section>
+    <h2>Restrições importantes: o que cada uma protege?</h2>
+    <div class="grid-3">
+      <div class="mini-card"><span class="pill">PRIMARY KEY</span><h3>Identidade da linha</h3><p>Evita chaves duplicadas ou nulas. Ex.: <code>pedidos.id</code>.</p></div>
+      <div class="mini-card"><span class="pill">FOREIGN KEY</span><h3>Referência válida</h3><p>Impede item de apontar para pedido ou produto inexistente, respeitando a política de exclusão escolhida.</p></div>
+      <div class="mini-card"><span class="pill">NOT NULL</span><h3>Campo obrigatório</h3><p>Exige que uma informação esteja preenchida; não garante que o texto faça sentido.</p></div>
+      <div class="mini-card"><span class="pill">UNIQUE</span><h3>Unicidade</h3><p>Evita dois produtos com o mesmo SKU; pode proteger uma chave de idempotência.</p></div>
+      <div class="mini-card"><span class="pill">CHECK</span><h3>Regra local</h3><p>Impede quantidade negativa ou estado fora do conjunto permitido, se expresso no esquema.</p></div>
+      <div class="mini-card"><span class="pill">INDEX</span><h3>Acesso eficiente</h3><p>Ajuda consultas específicas, mas aumenta espaço e custo de escrita. Não substitui restrições de integridade.</p></div>
+    </div>
+    <div class="warning"><strong>Discussão:</strong> <code>CHECK (disponivel &gt;= 0)</code> impede valores negativos, mas, sozinho, não define toda a estratégia para duas compras simultâneas.</div>
+  </section>
+  <section>
+    <h2>Modelo físico ilustrativo (PostgreSQL)</h2>
+    <p>Este é um <strong>recorte didático</strong> do esquema, não um script completo de produção. Ele mostra PK, FK, restrições e um preço histórico por item.</p>
+    <pre>CREATE TABLE produtos (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  sku TEXT NOT NULL UNIQUE,
+  nome TEXT NOT NULL,
+  preco_atual NUMERIC(12,2) NOT NULL CHECK (preco_atual &gt;= 0)
+);
+
+CREATE TABLE estoques (
+  produto_id BIGINT PRIMARY KEY REFERENCES produtos(id),
+  disponivel INT NOT NULL CHECK (disponivel &gt;= 0),
+  reservado INT NOT NULL DEFAULT 0 CHECK (reservado &gt;= 0)
+);
+
+CREATE TABLE pedidos (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  cliente_id BIGINT NOT NULL, -- FK para clientes no modelo completo
+  status TEXT NOT NULL CHECK
+    (status IN ('CRIADO','AGUARDANDO_PAGAMENTO',
+                'PAGO','CONCLUIDO','CANCELADO')),
+  criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE itens_pedido (
+  pedido_id BIGINT NOT NULL REFERENCES pedidos(id),
+  produto_id BIGINT NOT NULL REFERENCES produtos(id),
+  quantidade INT NOT NULL CHECK (quantidade &gt; 0),
+  preco_unitario NUMERIC(12,2) NOT NULL CHECK (preco_unitario &gt;= 0),
+  PRIMARY KEY (pedido_id, produto_id)
+);
+
+CREATE TABLE pagamentos (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  pedido_id BIGINT NOT NULL REFERENCES pedidos(id),
+  status TEXT NOT NULL,
+  referencia_externa TEXT UNIQUE
+);</pre>
+    <p><strong>Escolhas conscientes:</strong> o preço do item é um snapshot histórico; a chave composta de <code>itens_pedido</code> pressupõe que cada produto aparece uma única vez por pedido; caso existam variações ou linhas repetidas, considere um ID próprio de item.</p>
+  </section>
+  <section>
+    <h2>Normalização sem perder o histórico</h2>
+    <p>Não copie nome, preço atual e descrição do produto em todas as tabelas sem motivo. Centralizar os dados do catálogo evita inconsistências quando a mesma informação muda.</p>
+    <p>Por outro lado, <strong>preço unitário no momento da compra</strong> pertence ao histórico do pedido. Guardá-lo em <code>itens_pedido</code> é uma decisão intencional de domínio, não um erro a ser “corrigido” com um JOIN no preço atual.</p>
+    <div class="note"><strong>Pergunte:</strong> se o nome de um produto mudar, o comprovante antigo deve exibir o nome de hoje ou o nome daquela compra? Isso abre a discussão sobre snapshots de descrição, impostos e descontos sem sobrecarregar o primeiro modelo.</div>
+  </section>
+  <section>
+    <h2>Consulta, JOIN e índice</h2>
+    <p>Uma pergunta prática: “Quero ver os últimos pedidos de um cliente”. O SQL pode relacionar dados por chaves; o índice depende das consultas reais.</p>
+    <pre>SELECT id, status, criado_em
+FROM pedidos
+WHERE cliente_id = $1
+ORDER BY criado_em DESC
+LIMIT 20;
+
+CREATE INDEX idx_pedidos_cliente_criado
+  ON pedidos (cliente_id, criado_em DESC);</pre>
+    <p>Explique que <code>FOREIGN KEY</code> garante vínculo, mas em PostgreSQL <strong>não cria automaticamente índice na coluna que referencia</strong> outra tabela. Índices extras devem ser escolhidos após observar filtros, ordenações e volume.</p>
+    <div class="warning"><strong>Não antecipe otimização:</strong> na próxima aula vocês estudarão <em>scans, joins, índices e planos de execução</em> com mais profundidade. Hoje basta compreender por que uma consulta encontra linhas relacionadas.</div>
+  </section>
+  <section>
+    <h2>Transação e duas compras da última unidade</h2>
+    <p>A aplicação leu “1 disponível”; dois clientes tentam reservar ao mesmo tempo. Duas verificações em memória não são garantia suficiente. Uma forma de demonstrar a concorrência no banco é a atualização condicional:</p>
+    <pre>UPDATE estoques
+SET disponivel = disponivel - $2,
+    reservado = reservado + $2
+WHERE produto_id = $1 AND disponivel &gt;= $2
+RETURNING produto_id;</pre>
+    <p>Com dois pedidos concorrentes de uma unidade e somente uma disponível, a condição impede que ambos reduzam o estoque. Se a consulta não retornar linha, a reserva não aconteceu. A atualização e o registro da reserva/pedido precisam ser coordenados em uma transação consistente.</p>
+    <div class="warning"><strong>Atenção:</strong> não mantenha uma transação de banco aberta aguardando uma API de pagamento. Integrar sistemas externos exige fluxos de confirmação, expiração ou compensação tratados explicitamente.</div>
+  </section>
+  <section>
+    <h2>Roteiro sugerido para os 60 minutos</h2>
+    <div class="agenda">
+      <div><b>0–10 min</b>Revisão do modelo de domínio e dos preços históricos.</div>
+      <div><b>10–25 min</b>Desenho das tabelas, cardinalidades, PK e FK.</div>
+      <div><b>25–50 min</b>Exercício de restrições, consulta e corrida pelo último item.</div>
+      <div><b>50–60 min</b>Casos de teste, decisões abertas e síntese no Notion.</div>
+    </div>
+  </section>
+  <section>
+    <h2>Exercício principal — transformar o domínio em dados</h2>
+    <div class="note"><strong>Requisito:</strong> “Um cliente pode realizar pedidos com vários produtos, cada compra mantém o preço original e várias tentativas de pagamento podem ocorrer sem apagar o histórico.”</div>
+    <ol class="checklist">
+      <li>Desenhe <strong>clientes, produtos, estoques, pedidos, itens_pedido, pagamentos</strong> e suas cardinalidades.</li>
+      <li>Defina PK e FK. Discuta se a ligação Produto–Estoque é 1:1 ou 1:N.</li>
+      <li>Escolha pelo menos três restrições: quantidade positiva, SKU único, referências válidas etc.</li>
+      <li>Explique como consultar os pedidos de um cliente e seus itens usando JOIN.</li>
+      <li>Descreva o que acontece quando duas compras disputam a última unidade.</li>
+    </ol>
+    <div class="success"><strong>Critério de sucesso:</strong> ela sabe dizer que tipo de inconsistência cada chave ou restrição evita e consegue distinguir o que o banco garante do que precisa ser coordenado pela aplicação.</div>
+  </section>
+  <section>
+    <h2>Perguntas de QA: testes para o banco</h2>
+    <ul class="questions">
+      <li>É possível gravar um <code>item_pedido</code> para um pedido inexistente?</li>
+      <li>Dá para cadastrar dois produtos com o mesmo SKU?</li>
+      <li>O banco aceita <code>quantidade = -1</code> ou <code>disponivel = -5</code>?</li>
+      <li>Se um produto for removido, o histórico de pedidos fica íntegro? Seria melhor inativá-lo?</li>
+      <li>Se o preço atual mudar, o valor histórico do pedido permanece igual?</li>
+      <li>O que ocorre quando duas transações reservam o último item ao mesmo tempo?</li>
+      <li>Um pagamento pode ser inserido duas vezes com a mesma referência externa?</li>
+      <li>Como descobrir a causa quando um INSERT falha por FK, UNIQUE ou CHECK?</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Mini desafio</h2>
+    <div class="success"><strong>Sem usar ORM:</strong> desenhe uma consulta que retorne pedido, data, produto, quantidade e preço histórico. Depois pergunte qual índice poderia ajudar a listagem frequente de pedidos recentes de um cliente.</div>
+    <p>Estimule o raciocínio, não a memorização da sintaxe. Se a Jemi quiser, valide as hipóteses em um banco de testes com poucos dados e depois com dados suficientes para observar diferença de plano.</p>
+  </section>
+  <section>
+    <h2>O que ela deve sair sabendo</h2>
+    <ul class="checklist">
+      <li>Explicar PK, FK, UNIQUE, NOT NULL e CHECK com exemplos.</li>
+      <li>Desenhar relações 1:1 e 1:N, e justificar quando seria N:N.</li>
+      <li>Distinguir normalização de snapshots históricos intencionais.</li>
+      <li>Entender a ideia de transação e atualização condicional sob concorrência.</li>
+      <li>Relacionar consulta, JOIN e índice sem confundir performance com integridade.</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Materiais de apoio</h2>
+    <a class="material" href="https://www.postgresql.org/docs/current/ddl-constraints.html" target="_blank" rel="noopener"><strong>PostgreSQL — Constraints ↗</strong><small>PK, FK, UNIQUE, NOT NULL e CHECK na documentação oficial.</small></a>
+    <a class="material" href="https://www.postgresql.org/docs/current/tutorial-join.html" target="_blank" rel="noopener"><strong>PostgreSQL — Joins Between Tables ↗</strong><small>Exemplos de como relacionar dados de tabelas diferentes.</small></a>
+    <a class="material" href="https://www.postgresql.org/docs/current/indexes.html" target="_blank" rel="noopener"><strong>PostgreSQL — Indexes ↗</strong><small>Referência para a aula seguinte sobre execução e desempenho.</small></a>
+    <a class="material" href="https://www.postgresql.org/docs/current/tutorial-transactions.html" target="_blank" rel="noopener"><strong>PostgreSQL — Transactions ↗</strong><small>Conceito de commit, rollback e operação atômica.</small></a>
+  </section>
+  <section>
+    <h2>Anotação sugerida para o Notion</h2>
+    <pre>## Aula 04 — Banco de dados e modelagem
+
+### Modelo relacional da loja
+Tabelas:
+Relacionamentos e cardinalidades:
+
+### Restrições que escolhemos
+- PK:
+- FK:
+- UNIQUE:
+- CHECK:
+
+### Decisões importantes
+- Preço histórico por item:
+- Exclusão x inativação de produto:
+- Estratégia de reserva de estoque:
+
+### Exercício
+Listar pedidos e itens de um cliente.
+Descrever a compra concorrente da última unidade.</pre>
+  </section>
+
+  <section>
+    <h2>Continuar a mentoria</h2>
+    <div class="grid-2">
+      <a class="material" href="aula-03.html"><strong>← Aula 03: Domínio e regras de negócio</strong><small>Revisar os fundamentos antes de avançar.</small></a>
+      <a class="material" href="index.html"><strong>Ver próximas aulas →</strong><small>Aula 05 — Como o banco executa consultas (em breve)</small></a>
+    </div>
+  </section>
+</main>
+<footer>Aula 04 • Plano de Mentoria Backend</footer>
+</body>
+</html>
