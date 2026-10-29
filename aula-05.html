@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Aula 05 — Do requisito à implementação</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Cpath d='M25 20 13 32l12 12M39 20l12 12-12 12M35 16 29 48' fill='none' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"><style>
+:root {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --primary-soft: #eef2ff;
+  --border: #e5e7eb;
+  --success: #0f766e;
+  --success-soft: #ecfdf5;
+  --warning: #a16207;
+  --warning-soft: #fefce8;
+  --code: #111827;
+  --shadow: 0 10px 30px rgba(31, 41, 55, 0.08);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+}
+a { color: var(--primary); }
+.container { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+header {
+  background:
+    radial-gradient(circle at top right, rgba(99,102,241,.28), transparent 35%),
+    linear-gradient(135deg, #111827, #312e81);
+  color: white;
+  padding: 58px 0 46px;
+}
+header h1 { font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1.08; margin: 0 0 14px; max-width: 900px; }
+header p { max-width: 850px; margin: 0; color: #dbeafe; font-size: 1.05rem; }
+.badge {
+  display: inline-block; margin-bottom: 16px; padding: 7px 11px; border-radius: 999px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  font-size: .82rem; font-weight: 800; letter-spacing: .04em;
+}
+main { padding: 36px 0 70px; }
+
+.brand-icon {
+  width: 52px; height: 52px; display: grid; place-items: center;
+  margin-bottom: 16px; border-radius: 15px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  color: white; font-weight: 900; font-size: 1rem; letter-spacing: -.08em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.project-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 18px; padding: 10px 14px; border-radius: 12px;
+  color: white; text-decoration: none; font-weight: 750;
+  background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.20);
+  transition: .16s ease;
+}
+.project-link:hover {
+  background: rgba(255,255,255,.16);
+  transform: translateY(-1px);
+}
+
+section {
+  background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+  padding: 27px; margin-bottom: 22px; box-shadow: var(--shadow);
+}
+h2 { margin-top: 0; font-size: 1.42rem; }
+h3 { margin-bottom: 7px; }
+.muted { color: var(--muted); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.stat, .mini-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 19px;
+}
+.stat strong { display: block; color: var(--primary); font-size: 1.7rem; }
+.note {
+  background: var(--primary-soft); border-left: 4px solid var(--primary);
+  padding: 16px 18px; border-radius: 12px;
+}
+.success {
+  background: var(--success-soft); border-left: 4px solid var(--success);
+  padding: 16px 18px; border-radius: 12px;
+}
+.warning {
+  background: var(--warning-soft); border-left: 4px solid #eab308;
+  padding: 16px 18px; border-radius: 12px;
+}
+.breadcrumb {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px;
+  text-decoration: none; color: #dbeafe; font-weight: 650;
+}
+.agenda {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.agenda div {
+  padding: 15px; border: 1px solid var(--border); border-radius: 14px; background: #f9fafb;
+}
+.agenda b { color: var(--primary); display: block; }
+.flow {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 9px; margin: 18px 0 4px;
+}
+.flow span {
+  padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: #f9fafb; font-weight: 700;
+}
+.flow i { color: var(--primary); font-style: normal; font-weight: 900; }
+code, .code {
+  background: var(--code); color: #e5e7eb; padding: 2px 6px; border-radius: 6px;
+}
+pre {
+  overflow-x: auto; background: var(--code); color: #e5e7eb; padding: 18px;
+  border-radius: 14px; line-height: 1.5;
+}
+.material {
+  display: block; text-decoration: none; color: inherit; padding: 16px 17px;
+  border: 1px solid var(--border); border-radius: 14px; margin: 10px 0;
+  transition: .16s ease;
+}
+.material:hover { border-color: #a5b4fc; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(31,41,55,.06); }
+.material strong { display: block; color: var(--primary); }
+.material small { color: var(--muted); }
+.checklist li, .questions li { margin: 8px 0; }
+.pill {
+  display: inline-block; background: var(--primary-soft); color: var(--primary-dark);
+  border-radius: 999px; padding: 4px 9px; font-size: .78rem; font-weight: 750;
+}
+footer { text-align: center; color: var(--muted); padding: 0 0 38px; font-size: .9rem; }
+@media (max-width: 850px) {
+  .grid-3, .grid-2, .agenda { grid-template-columns: 1fr; }
+}
+@media print {
+  body { background: white; }
+  section, .stat { box-shadow: none; }
+}
+</style></head><body>
+<header><div class="container"><div class="brand-icon" aria-hidden="true">&lt;/&gt;</div><a class="breadcrumb" href="index.html">← Voltar para o plano</a><div class="badge">AULA 05 • FUNDAMENTOS</div><h1>Do requisito à implementação</h1><p>Entender uma demanda e transformá-la em passos, código simples e resultados verificáveis.</p><a class="project-link" href="https://github.com/JemillySAguilar/EloIs-store" target="_blank" rel="noopener">↗ EloIs Store no GitHub</a></div></header><main class="container">
+<div class="grid-3" style="margin-bottom:22px"><div class="stat"><strong>60 min</strong><span class="muted">Encontro</span></div><div class="stat"><strong>Prática</strong><span class="muted">Código e raciocínio</span></div><div class="stat"><strong>EloIs</strong><span class="muted">Contexto do projeto</span></div></div>
+<section><h2>Objetivo da aula</h2><p>Converter uma regra de negócio em passos verificáveis e em uma função pequena e legível. Não é uma aula para decorar sintaxe: é para <strong>entender entradas, saídas, decisões e casos de borda</strong>.</p><div class="note"><strong>Mensagem central:</strong> antes de escrever código, explique o problema em linguagem simples. Uma solução boa precisa atender às regras, ser testável e permitir mudanças.</div></section>
+<section><h2>Diagnóstico inicial (primeiros 10–15 minutos)</h2><p>Sem IA e sem pressão de acertar tudo, peça à Jenny que leia o código abaixo e diga o resultado para cada entrada, identifique a condição e sugira um caso não previsto.</p><pre>def frete_gratis(total):
+    if total &gt;= 150:
+        return True
+    return False
+
+# O que acontece para 149, 150 e 180?</pre><ul class="questions"><li>Ela entende parâmetro, retorno e condição?</li><li>Consegue diferenciar número, texto, booleano e uma lista de itens?</li><li>Consegue explicar o que aconteceria se o total fosse negativo?</li></ul><div class="warning"><strong>Adaptação:</strong> se surgirem lacunas, retome funções, condicionais e tipos durante o exercício. Se estiver confortável, avance para decomposição e casos de teste. Não use o diagnóstico como prova ou nota.</div></section>
+<section><h2>Da demanda para uma especificação clara</h2><div class="note"><strong>Demanda:</strong> “A EloIs Store quer conceder 10% de desconto nos pedidos de pelo menos R$ 200, mas limitar o desconto a R$ 50. Pedidos abaixo de R$ 200 não recebem desconto.”</div><ol class="checklist"><li><strong>Entrada:</strong> subtotal do pedido em reais (valor não negativo).</li><li><strong>Saída:</strong> valor do desconto e total final.</li><li><strong>Regras:</strong> desconto de 10% a partir de R$ 200, com teto de R$ 50.</li><li><strong>Casos de borda:</strong> subtotal 0, 199,99, 200, 500, 1000 e valores negativos.</li><li><strong>Fora de escopo:</strong> impostos, cupons, frete e persistência em banco.</li></ol><p>Discuta o que “pelo menos R$ 200” significa, se o desconto é calculado antes do frete e quem aprova as regras ambíguas. Requisitos claros economizam retrabalho.</p></section>
+<section><h2>Decomposição: raciocinar antes de codificar</h2><div class="flow"><span>Entender a regra</span><i>→</i><span>Definir entradas</span><i>→</i><span>Separar decisões</span><i>→</i><span>Implementar</span><i>→</i><span>Validar</span></div><p>Peça que ela escreva primeiro o pseudocódigo: rejeitar valores negativos; se subtotal for menor que 200, desconto zero; caso contrário, calcular 10% e respeitar limite; subtrair e retornar.</p></section>
+<section><h2>Exemplo de referência (Python)</h2><p>Mostre este exemplo <strong>somente depois</strong> de ela propor a própria solução. Em dinheiro real, valores decimais pedem cuidado: aqui usamos <code>Decimal</code> para evitar erros comuns de representação binária.</p><pre>from decimal import Decimal, ROUND_HALF_UP
+
+def calcular_total(subtotal: Decimal) -&gt; tuple[Decimal, Decimal]:
+    if subtotal &lt; 0:
+        raise ValueError("Subtotal não pode ser negativo")
+
+    desconto = Decimal("0.00")
+    if subtotal &gt;= Decimal("200.00"):
+        desconto = min(subtotal * Decimal("0.10"), Decimal("50.00"))
+
+    desconto = desconto.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    total = subtotal - desconto
+    return desconto, total
+
+print(calcular_total(Decimal("200.00")))
+# (Decimal('20.00'), Decimal('180.00'))</pre><p><strong>Discussão:</strong> o que é responsabilidade desta função? Ela deveria buscar o pedido no banco, chamar uma API externa ou imprimir a resposta? Por quê?</p></section>
+<section><h2>Roteiro de 60 minutos</h2><div class="agenda"><div><b>0–10 min</b>Diagnóstico de leitura de código e revisão das aulas 03–04.</div><div><b>10–25 min</b>Interpretar a demanda e escrever casos e pseudocódigo.</div><div><b>25–55 min</b>Implementar a função, experimentar entradas e revisar a solução.</div><div><b>55–60 min</b>Síntese, dificuldades e registro no Notion.</div></div><p class="muted">Se o diagnóstico demandar 15 minutos, reduza a quantidade de casos implementados ao vivo e deixe o restante como tarefa.</p></section>
+<section><h2>Exercício principal — regra de desconto</h2><ol class="checklist"><li>Reescreva a demanda com suas próprias palavras.</li><li>Liste entradas, saídas e pelo menos cinco casos de teste.</li><li>Crie uma função sem acesso ao banco ou interface.</li><li>Execute casos de borda e valide o teto do desconto.</li><li>Explique o que mudou entre a primeira versão e a versão revisada.</li></ol><div class="success"><strong>Critério de sucesso:</strong> a Jenny consegue explicar cada condição, prever o resultado de entradas conhecidas e justificar por que a lógica foi isolada em uma função.</div></section>
+<section><h2>Perguntas para discussão e QA</h2><ul class="questions"><li>Qual a diferença entre requisito, regra de negócio e implementação?</li><li>O que fazer se a descrição disser “acima de R$ 200” em vez de “a partir de R$ 200”?</li><li>O desconto é R$ 50 para um subtotal de R$ 1000? Por quê?</li><li>O que acontece para um pedido de R$ 199,99?</li><li>Por que uma função que recebe dados é mais fácil de testar que uma que consulta a API?</li><li>Como você verificaria que uma mudança futura não quebrou os descontos antigos?</li></ul></section>
+<section><h2>Mini desafio entre encontros (30–60 min)</h2><p>Adicionar uma regra opcional para clientes VIP: o desconto passa a 15% para pedidos elegíveis, com o mesmo teto de R$ 50. Explicitar se a regra VIP substitui ou soma ao desconto normal (neste exercício, <strong>substitui</strong>).</p><p>Entregar a função e uma tabela com entradas/saídas esperadas. Não é necessário abrir PR na aplicação se isso exigir alterar fluxos em produção; um arquivo isolado é suficiente.</p></section>
+<section><h2>O que ela deve sair sabendo</h2><ul class="checklist"><li>Identificar o que falta esclarecer num requisito.</li><li>Decompor um problema em passos e escrever uma função pequena.</li><li>Usar condicionais, parâmetros e retornos para representar regras.</li><li>Considerar limites, entradas inválidas e validação.</li><li>Explicar o código produzido sem depender de IA.</li></ul></section>
+<section><h2>Materiais de apoio</h2><a class="material" href="https://docs.python.org/3/tutorial/controlflow.html" target="_blank" rel="noopener"><strong>Python — Controle de fluxo ↗</strong><small>if, funções e parâmetros.</small></a><a class="material" href="https://docs.python.org/3/library/decimal.html" target="_blank" rel="noopener"><strong>Python — decimal ↗</strong><small>Representação e arredondamento de valores monetários.</small></a><a class="material" href="https://martinfowler.com/bliki/BoundedContext.html" target="_blank" rel="noopener"><strong>Martin Fowler — Bounded Context ↗</strong><small>Leitura opcional para discutir limites de regras de domínio, sem aprofundar nesta aula.</small></a></section>
+<section><h2>Anotações para o Notion</h2><pre>## Aula 05 — Do requisito à implementação
+### Requisito explicado com minhas palavras
+### Entradas e saídas
+### Regras e ambiguidades
+### Casos de borda
+### Pseudocódigo
+### Implementação e exemplos
+### Dúvidas e próximos passos</pre></section>
+<section><h2>Continuar a mentoria</h2><div class="grid-2"><a class="material" href="aula-04.html"><strong>← Aula 04</strong><small>Rever o aprendizado anterior.</small></a><a class="material" href="aula-06.html"><strong>Aula 06 →</strong><small>Continuar a trilha.</small></a></div></section></main><footer>Aula 05 • Mentoria de Engenharia de Software</footer></body></html>
