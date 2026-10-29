@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Aula 06 — Organização de código e responsabilidades</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Cpath d='M25 20 13 32l12 12M39 20l12 12-12 12M35 16 29 48' fill='none' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"><style>
+:root {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --primary-soft: #eef2ff;
+  --border: #e5e7eb;
+  --success: #0f766e;
+  --success-soft: #ecfdf5;
+  --warning: #a16207;
+  --warning-soft: #fefce8;
+  --code: #111827;
+  --shadow: 0 10px 30px rgba(31, 41, 55, 0.08);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+}
+a { color: var(--primary); }
+.container { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+header {
+  background:
+    radial-gradient(circle at top right, rgba(99,102,241,.28), transparent 35%),
+    linear-gradient(135deg, #111827, #312e81);
+  color: white;
+  padding: 58px 0 46px;
+}
+header h1 { font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1.08; margin: 0 0 14px; max-width: 900px; }
+header p { max-width: 850px; margin: 0; color: #dbeafe; font-size: 1.05rem; }
+.badge {
+  display: inline-block; margin-bottom: 16px; padding: 7px 11px; border-radius: 999px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  font-size: .82rem; font-weight: 800; letter-spacing: .04em;
+}
+main { padding: 36px 0 70px; }
+
+.brand-icon {
+  width: 52px; height: 52px; display: grid; place-items: center;
+  margin-bottom: 16px; border-radius: 15px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+  color: white; font-weight: 900; font-size: 1rem; letter-spacing: -.08em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.project-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 18px; padding: 10px 14px; border-radius: 12px;
+  color: white; text-decoration: none; font-weight: 750;
+  background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.20);
+  transition: .16s ease;
+}
+.project-link:hover {
+  background: rgba(255,255,255,.16);
+  transform: translateY(-1px);
+}
+
+section {
+  background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+  padding: 27px; margin-bottom: 22px; box-shadow: var(--shadow);
+}
+h2 { margin-top: 0; font-size: 1.42rem; }
+h3 { margin-bottom: 7px; }
+.muted { color: var(--muted); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.stat, .mini-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 19px;
+}
+.stat strong { display: block; color: var(--primary); font-size: 1.7rem; }
+.note {
+  background: var(--primary-soft); border-left: 4px solid var(--primary);
+  padding: 16px 18px; border-radius: 12px;
+}
+.success {
+  background: var(--success-soft); border-left: 4px solid var(--success);
+  padding: 16px 18px; border-radius: 12px;
+}
+.warning {
+  background: var(--warning-soft); border-left: 4px solid #eab308;
+  padding: 16px 18px; border-radius: 12px;
+}
+.breadcrumb {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px;
+  text-decoration: none; color: #dbeafe; font-weight: 650;
+}
+.agenda {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.agenda div {
+  padding: 15px; border: 1px solid var(--border); border-radius: 14px; background: #f9fafb;
+}
+.agenda b { color: var(--primary); display: block; }
+.flow {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 9px; margin: 18px 0 4px;
+}
+.flow span {
+  padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: #f9fafb; font-weight: 700;
+}
+.flow i { color: var(--primary); font-style: normal; font-weight: 900; }
+code, .code {
+  background: var(--code); color: #e5e7eb; padding: 2px 6px; border-radius: 6px;
+}
+pre {
+  overflow-x: auto; background: var(--code); color: #e5e7eb; padding: 18px;
+  border-radius: 14px; line-height: 1.5;
+}
+.material {
+  display: block; text-decoration: none; color: inherit; padding: 16px 17px;
+  border: 1px solid var(--border); border-radius: 14px; margin: 10px 0;
+  transition: .16s ease;
+}
+.material:hover { border-color: #a5b4fc; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(31,41,55,.06); }
+.material strong { display: block; color: var(--primary); }
+.material small { color: var(--muted); }
+.checklist li, .questions li { margin: 8px 0; }
+.pill {
+  display: inline-block; background: var(--primary-soft); color: var(--primary-dark);
+  border-radius: 999px; padding: 4px 9px; font-size: .78rem; font-weight: 750;
+}
+footer { text-align: center; color: var(--muted); padding: 0 0 38px; font-size: .9rem; }
+@media (max-width: 850px) {
+  .grid-3, .grid-2, .agenda { grid-template-columns: 1fr; }
+}
+@media print {
+  body { background: white; }
+  section, .stat { box-shadow: none; }
+}
+</style></head><body>
+<header><div class="container"><div class="brand-icon" aria-hidden="true">&lt;/&gt;</div><a class="breadcrumb" href="index.html">← Voltar para o plano</a><div class="badge">AULA 06 • ORGANIZAÇÃO</div><h1>Organização de código e responsabilidades</h1><p>Escrever software fácil de compreender, testar e modificar — sem complexidade desnecessária.</p><a class="project-link" href="https://github.com/JemillySAguilar/EloIs-store" target="_blank" rel="noopener">↗ EloIs Store no GitHub</a></div></header><main class="container">
+<div class="grid-3" style="margin-bottom:22px"><div class="stat"><strong>60 min</strong><span class="muted">Encontro</span></div><div class="stat"><strong>Prática</strong><span class="muted">Código e raciocínio</span></div><div class="stat"><strong>EloIs</strong><span class="muted">Contexto do projeto</span></div></div>
+<section><h2>Objetivo da aula</h2><p>Identificar responsabilidades misturadas e reorganizar uma funcionalidade em partes simples. Trabalhar <strong>coesão, acoplamento e separação de responsabilidades</strong> com um exemplo concreto, sem transformar a aula numa discussão de frameworks ou padrões complexos.</p><div class="note"><strong>Mensagem central:</strong> organizar código não significa criar mais arquivos ou camadas por moda. Significa tornar cada parte mais compreensível, testável e fácil de modificar.</div></section>
+<section><h2>Revisão e conexão com a aula 05</h2><p>Retome a função de desconto: ela recebe valores e devolve resultados. Por que não deveria também consultar banco, enviar e-mail e montar uma resposta HTTP? Convide a Jenny a identificar decisões que deveriam estar fora dessa função.</p></section>
+<section><h2>Três conceitos com linguagem prática</h2><div class="grid-3"><div class="mini-card"><h3>Responsabilidade</h3><p>Qual problema este trecho resolve? Quem muda quando a regra muda?</p></div><div class="mini-card"><h3>Coesão</h3><p>As operações de uma função ou módulo pertencem ao mesmo objetivo?</p></div><div class="mini-card"><h3>Acoplamento</h3><p>Quanto esta parte depende de detalhes de outras partes?</p></div></div><p>Nem toda função comprida é errada, nem toda função curta é boa. O foco é a clareza das fronteiras e a facilidade de mudar regras sem efeitos colaterais.</p></section>
+<section><h2>Código inicial — tudo misturado</h2><p>O exemplo é intencionalmente simplificado e simula persistência por uma lista. Peça que a Jenny destaque onde estão validação, cálculo, armazenamento e apresentação.</p><pre>pedidos = []
+
+def criar_pedido(cliente, subtotal):
+    if not cliente:
+        return {"erro": "Cliente obrigatório"}
+    if subtotal &lt; 0:
+        return {"erro": "Subtotal inválido"}
+
+    desconto = 0
+    if subtotal &gt;= 200:
+        desconto = min(subtotal * 0.10, 50)
+
+    total = subtotal - desconto
+    pedido = {"cliente": cliente, "total": total}
+    pedidos.append(pedido)
+    print("Pedido criado:", pedido)
+    return pedido</pre><div class="warning"><strong>Questão:</strong> se a regra de desconto mudar, onde mexer? E se o banco for trocado por API? E se a interface precisar exibir a mensagem em outro idioma?</div></section>
+<section><h2>Uma refatoração possível</h2><p>Dividir por papéis, sem criar uma classe para cada linha. Neste recorte didático usamos números simples para focar estrutura; em valores monetários reais, reaproveite <code>Decimal</code> da aula 05.</p><pre>def validar_pedido(cliente, subtotal):
+    if not cliente:
+        raise ValueError("Cliente obrigatório")
+    if subtotal &lt; 0:
+        raise ValueError("Subtotal inválido")
+
+def calcular_desconto(subtotal):
+    if subtotal &lt; 200:
+        return 0
+    return min(subtotal * 0.10, 50)
+
+def montar_pedido(cliente, subtotal):
+    validar_pedido(cliente, subtotal)
+    desconto = calcular_desconto(subtotal)
+    return {"cliente": cliente, "total": subtotal - desconto}
+
+def salvar_pedido(pedido, repositorio):
+    repositorio.append(pedido)
+    return pedido
+
+pedidos = []
+novo = montar_pedido("Jenny", 250)
+salvar_pedido(novo, pedidos)
+print(novo)</pre><p><strong>Atenção:</strong> esta não é “a única arquitetura correta”. Em um projeto maior, as responsabilidades podem virar módulos, serviços ou classes. Por enquanto, funções bem nomeadas tornam o fluxo mais claro.</p></section>
+<section><h2>Desenho de responsabilidades</h2><div class="flow"><span>Entrada / API</span><i>→</i><span>Validação</span><i>→</i><span>Regras de negócio</span><i>→</i><span>Persistência</span></div><p>Discuta onde se converte erro em status HTTP: a camada de entrada/entrega pode traduzir <code>ValueError</code> em uma resposta adequada; a função de cálculo não precisa conhecer HTTP. Diferencie dependência entre módulos de uma sequência normal de chamadas.</p></section>
+<section><h2>Roteiro de 60 minutos</h2><div class="agenda"><div><b>0–10 min</b>Revisão do desconto e dificuldades.</div><div><b>10–25 min</b>Responsabilidade, coesão e acoplamento.</div><div><b>25–55 min</b>Leitura do código misturado e refatoração em conjunto.</div><div><b>55–60 min</b>Comparação antes/depois e registro no Notion.</div></div></section>
+<section><h2>Exercício principal — refatorar sem quebrar comportamento</h2><ol class="checklist"><li>Marque no código original o que é validação, regra, persistência e apresentação.</li><li>Descreva por que vale a pena separar pelo menos duas dessas responsabilidades.</li><li>Refatore o exemplo preservando os resultados para entradas válidas e a rejeição de entradas inválidas.</li><li>Compare os resultados antes e depois para clientes vazios, subtotais negativos, 199,99, 200 e 700.</li><li>Simule uma mudança na regra de desconto. Qual parte precisa mudar?</li></ol><div class="success"><strong>Critério de sucesso:</strong> a Jenny consegue apontar limites entre responsabilidades, refatorar uma função sem perder comportamento e explicar como a nova estrutura reduz o impacto de mudanças.</div></section>
+<section><h2>Perguntas para discussão</h2><ul class="questions"><li>Separar tudo em arquivos diferentes torna o sistema automaticamente melhor?</li><li>Por que uma função de regra de negócio não deveria imprimir mensagens diretamente?</li><li>Como testar o cálculo do desconto sem precisar salvar no banco?</li><li>O que mudaria se a persistência fosse feita por uma API externa?</li><li>Que riscos aparecem quando refatoramos sem testes?</li><li>Qual seria um sinal de que dividimos o código demais?</li></ul></section>
+<section><h2>Mini desafio entre encontros (30–60 min)</h2><p>Reorganizar uma funcionalidade pequena da EloIs Store ou de um exemplo isolado. Entregar o “antes e depois” e um texto curto explicando duas decisões tomadas. Adicionar pelo menos três testes manuais ou automatizados para comprovar equivalência de comportamento.</p><div class="warning"><strong>Escopo:</strong> não refatorar a aplicação inteira e não mudar regras de negócio durante a reorganização. Deixe alterações de comportamento para um PR separado.</div></section>
+<section><h2>O que ela deve sair sabendo</h2><ul class="checklist"><li>Diferenciar validação, negócio, persistência e apresentação.</li><li>Explicar coesão e acoplamento usando exemplos próprios.</li><li>Identificar responsabilidades misturadas.</li><li>Refatorar uma função sem alterar comportamento esperado.</li><li>Justificar quando uma abstração ajuda e quando só cria complexidade.</li></ul></section>
+<section><h2>Materiais de apoio</h2><a class="material" href="https://refactoring.com/" target="_blank" rel="noopener"><strong>Refactoring — Martin Fowler ↗</strong><small>Introdução à melhoria da estrutura sem mudar comportamento observável.</small></a><a class="material" href="https://docs.python.org/3/tutorial/modules.html" target="_blank" rel="noopener"><strong>Python — Módulos ↗</strong><small>Como organizar funções em arquivos quando isso fizer sentido.</small></a><a class="material" href="https://martinfowler.com/bliki/PresentationDomainDataLayering.html" target="_blank" rel="noopener"><strong>Presentation Domain Data Layering ↗</strong><small>Leitura opcional sobre separação de responsabilidades.</small></a></section>
+<section><h2>Anotações para o Notion</h2><pre>## Aula 06 — Organização de código
+### Problemas observados no código inicial
+### Responsabilidades identificadas
+### Refatoração proposta
+### Resultados antes e depois
+### Como testar sem persistência
+### Trade-offs e dúvidas</pre></section>
+<section><h2>Continuar a mentoria</h2><div class="grid-2"><a class="material" href="aula-05.html"><strong>← Aula 05</strong><small>Rever o aprendizado anterior.</small></a><a class="material" href="index.html"><strong>Ver próximas aulas →</strong><small>Retornar ao plano geral.</small></a></div></section></main><footer>Aula 06 • Mentoria de Engenharia de Software</footer></body></html>
